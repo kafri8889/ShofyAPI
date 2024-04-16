@@ -40,11 +40,37 @@ class StoreApiView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-    def get(self, request, **kwargs):
+    def get_products(self, store_id):
+        """
+        Get all products with given store id
+        """
 
+        try:
+            store = Store.objects.get(pk=store_id)
+            serializer = ProductSerializer(store.products.all(), many=True)
+
+            return build_response(
+                data=serializer.data,
+                message="Product found",
+                status=status.HTTP_200_OK
+            )
+        except Store.DoesNotExist:
+            return build_response(
+                data=None,
+                message="Store not found",
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def get(self, request: HttpRequest, **kwargs):
         if "store_id" in kwargs:
+            if "/products" in request.path:
+                # Accessing "/store/{store_id}/products"
+                return self.get_products(kwargs["store_id"])
+
+            # Accessing "/store/{store_id}"
             return self.get_by_user_id(kwargs["store_id"])
 
+        # Accessing "/store"
         stores = Store.objects.all()
         serializer = StoreSerializer(stores, many=True)
 

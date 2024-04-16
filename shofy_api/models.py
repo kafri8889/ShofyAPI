@@ -25,7 +25,7 @@ class Product(models.Model):
 
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=1000)
-    price = models.DecimalField(max_digits=11, decimal_places=3)  # max price: Rp.999.999.999,999
+    price = models.DecimalField(max_digits=14, decimal_places=3)  # max price: Rp.999.999.999,999
     quantity = models.IntegerField()
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name="products")
 

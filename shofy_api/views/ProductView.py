@@ -36,8 +36,10 @@ class ProductApiView(APIView):
     def get(self, request, **kwargs):
 
         if "product_id" in kwargs:
+            # Accessing "/product/{product_id}"
             return self.get_by_id(kwargs["product_id"])
 
+        # Accessing "/product"
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
 
