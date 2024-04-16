@@ -37,11 +37,32 @@ class UserApiView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-    def get(self, request, **kwargs):
+    def get(self, request: HttpRequest, **kwargs):
 
         if "user_id" in kwargs:
+            if "/cart" in request.path:
+                # Accessing "/user/{user_id}/cart"
+                try:
+                    user = User.objects.get(pk=kwargs['user_id'])
+                except User.DoesNotExist:
+                    return build_response(
+                        data=None,
+                        message="User does not exist",
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+
+                serializer = CartItemSerializer(user.cart.all(), many=True)
+
+                return build_response(
+                    data=serializer.data,
+                    message=f"List of {user.username} cart items",
+                    status=status.HTTP_200_OK
+                )
+
+            # Accessing "/user/{user_id}"
             return self.get_by_id(kwargs["user_id"])
 
+        # Accessing "/user"
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
 
